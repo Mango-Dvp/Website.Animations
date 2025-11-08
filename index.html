@@ -35,6 +35,27 @@
             font-size: 14px;
         }
 
+        /* Beta Badge */
+        .beta-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 3000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: betaPulse 3s infinite;
+        }
+
+        @keyframes betaPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         /* Login Screen */
         .login-container {
             display: flex;
@@ -44,6 +65,7 @@
             height: 100vh;
             text-align: center;
             padding: 15px;
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a1a1a 100%);
         }
 
         .login-logo {
@@ -53,12 +75,13 @@
 
         .login-card {
             background: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 30px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
+            position: relative;
         }
 
         .login-title {
@@ -82,7 +105,7 @@
             padding: 12px;
             margin-bottom: 20px;
             text-align: left;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 0.8rem;
         }
 
@@ -99,7 +122,7 @@
             color: var(--light);
         }
 
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
             padding: 10px;
             background: var(--accent);
@@ -110,7 +133,7 @@
             transition: all 0.3s ease;
         }
 
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(162, 22, 28, 0.2);
@@ -151,13 +174,19 @@
 
         .confirmation-content {
             background: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 30px;
             width: 90%;
             max-width: 400px;
             text-align: center;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .confirmation-icon {
@@ -212,7 +241,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
-            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
         .logo-container {
@@ -280,11 +310,42 @@
             cursor: pointer;
             font-size: 0.8rem;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .sign-out-btn:hover {
             background: var(--primary);
             transform: translateY(-1px);
+        }
+
+        .sign-out-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .sign-out-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
         }
 
         /* Priority Alert */
@@ -326,11 +387,16 @@
 
         .panel {
             background: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 18px;
             overflow-y: auto;
             border: 1px solid var(--border);
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
         }
 
         .panel-header {
@@ -415,10 +481,27 @@
             border-left: 3px solid var(--warning);
             padding: 14px;
             margin-bottom: 10px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .call-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .call-item:hover::before {
+            left: 100%;
         }
 
         .call-item:hover {
@@ -525,19 +608,17 @@
             padding: 12px;
             margin-bottom: 8px;
             background: var(--accent);
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid var(--border);
             transition: all 0.3s ease;
-            cursor: grab;
+            cursor: pointer;
+            position: relative;
         }
 
         .unit-item:hover {
             background: #252525;
-            transform: translateY(-1px);
-        }
-
-        .unit-item:active {
-            cursor: grabbing;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .unit-status {
@@ -571,6 +652,14 @@
             font-weight: 600;
             font-size: 0.9rem;
             margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .unit-badge {
+            font-size: 0.7rem;
+            color: var(--primary);
         }
 
         .unit-officer {
@@ -590,26 +679,42 @@
             color: var(--gray);
         }
 
-        .unit-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .unit-action-btn {
-            padding: 4px 8px;
+        /* Right Click Menu */
+        .context-menu {
+            position: fixed;
             background: var(--card-bg);
-            color: var(--light);
             border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.65rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            border-radius: 6px;
+            padding: 8px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            animation: menuAppear 0.2s ease-out;
         }
 
-        .unit-action-btn:hover {
+        @keyframes menuAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .context-menu-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover {
             background: var(--primary);
-            border-color: var(--primary);
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
         }
 
         /* Active Incident Panel */
@@ -622,7 +727,7 @@
         .incident-header {
             background: var(--accent);
             padding: 18px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 15px;
             border: 1px solid var(--border);
         }
@@ -697,7 +802,7 @@
         .narrative-log {
             flex: 1;
             background: var(--accent);
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 14px;
             overflow-y: auto;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -710,6 +815,12 @@
             margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .narrative-entry:last-child {
@@ -779,7 +890,7 @@
             min-height: 40px;
             padding: 12px;
             background: var(--accent);
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid var(--border);
         }
 
@@ -791,6 +902,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            animation: tagAppear 0.3s ease-out;
+        }
+
+        @keyframes tagAppear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .unit-tag-remove {
@@ -806,6 +923,7 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            transition: background 0.2s;
         }
 
         .unit-tag-remove:hover {
@@ -824,7 +942,7 @@
             padding: 10px;
             background: var(--accent);
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -834,7 +952,7 @@
         .priority-option:hover {
             background: rgba(162, 22, 28, 0.2);
             border-color: var(--primary);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         /* Empty State */
@@ -866,12 +984,13 @@
 
         .modal-content {
             background: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 12px;
             width: 450px;
             max-width: 90%;
             padding: 20px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
+            animation: modalAppear 0.3s ease-out;
         }
 
         .modal-header {
@@ -962,7 +1081,7 @@
             padding: 12px;
             background: var(--accent);
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -1047,9 +1166,37 @@
             background: rgba(162, 22, 28, 0.1) !important;
             border: 2px dashed var(--primary) !important;
         }
+
+        /* LKVC Branding */
+        .lkvc-brand {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 0.7rem;
+            z-index: 100;
+        }
+
+        .lkvc-logo {
+            height: 16px;
+            width: auto;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
+    <!-- Beta Badge -->
+    <div class="beta-badge">BETA • Under Development & Testing</div>
+
+    <!-- LKVC Branding -->
+    <div class="lkvc-brand">
+        <img src="https://ik.imagekit.io/tycncf0zq0/Lakeview%20City%20Roleplay.png?updatedAt=1762564831685" alt="LKVC" class="lkvc-logo">
+        <span>Lakeview City Roleplay</span>
+    </div>
+
     <!-- Login Screen -->
     <div class="login-container" id="login-screen">
         <img src="https://ik.imagekit.io/seqcqjmzq/e595f6f1-e9e2-44a1-8b97-0c5afc307593.png?updatedAt=1756007991242" alt="Lakeview Comms CAD" class="login-logo">
@@ -1074,7 +1221,7 @@
                 
                 <div class="form-group">
                     <label class="form-label">Position</label>
-                    <select class="form-input" id="position" required>
+                    <select class="form-select" id="position" required>
                         <option value="">Select your position</option>
                         <option value="Dispatcher">Dispatcher</option>
                         <option value="Senior Dispatcher">Senior Dispatcher</option>
@@ -1103,6 +1250,26 @@
     <!-- Priority Alert -->
     <div class="priority-alert" id="priority-alert"></div>
 
+    <!-- Context Menu -->
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-action="status-10-8">
+            <i class="fas fa-circle text-success"></i> Set Status: 10-8 Available
+        </div>
+        <div class="context-menu-item" data-action="status-10-6">
+            <i class="fas fa-circle text-warning"></i> Set Status: 10-6 Busy
+        </div>
+        <div class="context-menu-item" data-action="status-10-7">
+            <i class="fas fa-circle text-danger"></i> Set Status: 10-7 Out of Service
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="update-location">
+            <i class="fas fa-map-marker-alt"></i> Update Location
+        </div>
+        <div class="context-menu-item" data-action="remove-unit">
+            <i class="fas fa-trash"></i> Remove Unit
+        </div>
+    </div>
+
     <!-- CAD Application -->
     <div class="app-container" id="cad-app">
         <header>
@@ -1116,7 +1283,7 @@
                     <div class="user-id" id="display-user-id">User#0000</div>
                     <div class="shift-time" id="shift-timer">Shift: 00:00:00</div>
                 </div>
-                <button class="sign-out-btn" id="sign-out-btn">
+                <button class="sign-out-btn" id="sign-out-btn" tabindex="0">
                     <i class="fas fa-sign-out-alt"></i> Sign Out
                 </button>
             </div>
@@ -1311,7 +1478,37 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Rank/Position</label>
-                    <input type="text" class="form-input" id="unit-rank" placeholder="e.g., Officer, Sergeant, Firefighter" required>
+                    <select class="form-select" id="unit-rank" required>
+                        <option value="">Select Rank</option>
+                        <optgroup label="Law Enforcement">
+                            <option value="Commissioner">Commissioner</option>
+                            <option value="Chief of Police">Chief of Police</option>
+                            <option value="Deputy Chief">Deputy Chief</option>
+                            <option value="Captain">Captain</option>
+                            <option value="Lieutenant">Lieutenant</option>
+                            <option value="Sergeant">Sergeant</option>
+                            <option value="Corporal">Corporal</option>
+                            <option value="Senior Officer">Senior Officer</option>
+                            <option value="Detective">Detective</option>
+                            <option value="Officer">Officer</option>
+                            <option value="Deputy">Deputy</option>
+                            <option value="Cadet">Cadet</option>
+                        </optgroup>
+                        <optgroup label="Fire District">
+                            <option value="Chief">Chief</option>
+                            <option value="Deputy Chief">Deputy Chief</option>
+                            <option value="Assistant Chief">Assistant Chief</option>
+                            <option value="Battalion Chief">Battalion Chief</option>
+                            <option value="Captain">Captain</option>
+                            <option value="Lieutenant">Lieutenant</option>
+                            <option value="Engineer">Engineer</option>
+                            <option value="Firefighter">Firefighter</option>
+                            <option value="Paramedic">Paramedic</option>
+                            <option value="EMT">EMT</option>
+                            <option value="Probationary">Probationary</option>
+                        </optgroup>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Last Location</label>
@@ -1353,7 +1550,8 @@
             selectedPriority: 'medium',
             selectedUnitStatus: '10-8',
             selectedDepartment: 'law-enforcement',
-            activePrioritySituation: null
+            activePrioritySituation: null,
+            selectedUnit: null
         };
 
         // DOM Elements
@@ -1366,6 +1564,7 @@
         const displayUserId = document.getElementById('display-user-id');
         const shiftTimer = document.getElementById('shift-timer');
         const priorityAlert = document.getElementById('priority-alert');
+        const contextMenu = document.getElementById('context-menu');
         const callList = document.getElementById('call-list');
         const unitList = document.getElementById('unit-list');
         const activeIncidentHeader = document.getElementById('active-incident-header');
@@ -1434,6 +1633,49 @@
                     document.querySelectorAll('.department-option').forEach(opt => opt.classList.remove('active'));
                     this.classList.add('active');
                     state.selectedDepartment = this.getAttribute('data-department');
+                    
+                    // Update rank dropdown based on department
+                    const rankSelect = document.getElementById('unit-rank');
+                    rankSelect.innerHTML = '';
+                    
+                    if (state.selectedDepartment === 'law-enforcement') {
+                        rankSelect.innerHTML = `
+                            <option value="">Select Rank</option>
+                            <optgroup label="Law Enforcement">
+                                <option value="Commissioner">Commissioner</option>
+                                <option value="Chief of Police">Chief of Police</option>
+                                <option value="Deputy Chief">Deputy Chief</option>
+                                <option value="Captain">Captain</option>
+                                <option value="Lieutenant">Lieutenant</option>
+                                <option value="Sergeant">Sergeant</option>
+                                <option value="Corporal">Corporal</option>
+                                <option value="Senior Officer">Senior Officer</option>
+                                <option value="Detective">Detective</option>
+                                <option value="Officer">Officer</option>
+                                <option value="Deputy">Deputy</option>
+                                <option value="Cadet">Cadet</option>
+                            </optgroup>
+                            <option value="Other">Other</option>
+                        `;
+                    } else {
+                        rankSelect.innerHTML = `
+                            <option value="">Select Rank</option>
+                            <optgroup label="Fire District">
+                                <option value="Chief">Chief</option>
+                                <option value="Deputy Chief">Deputy Chief</option>
+                                <option value="Assistant Chief">Assistant Chief</option>
+                                <option value="Battalion Chief">Battalion Chief</option>
+                                <option value="Captain">Captain</option>
+                                <option value="Lieutenant">Lieutenant</option>
+                                <option value="Engineer">Engineer</option>
+                                <option value="Firefighter">Firefighter</option>
+                                <option value="Paramedic">Paramedic</option>
+                                <option value="EMT">EMT</option>
+                                <option value="Probationary">Probationary</option>
+                            </optgroup>
+                            <option value="Other">Other</option>
+                        `;
+                    }
                 });
             });
 
@@ -1444,6 +1686,34 @@
                     activatePrioritySituation(situationType);
                     priorityModal.style.display = 'none';
                 });
+            });
+
+            // Context menu actions
+            document.querySelectorAll('.context-menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    handleContextMenuAction(action);
+                    contextMenu.style.display = 'none';
+                });
+            });
+
+            // Close context menu when clicking elsewhere
+            document.addEventListener('click', () => {
+                contextMenu.style.display = 'none';
+            });
+
+            // Right-click context menu for units
+            document.addEventListener('contextmenu', (e) => {
+                const unitElement = e.target.closest('.unit-item');
+                if (unitElement) {
+                    e.preventDefault();
+                    state.selectedUnit = unitElement.dataset.id;
+                    
+                    // Position context menu
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${e.pageX}px`;
+                    contextMenu.style.top = `${e.pageY}px`;
+                }
             });
 
             closeButtons.forEach(button => {
@@ -1499,6 +1769,43 @@
                     }
                 }
             });
+        }
+
+        // Handle context menu actions
+        function handleContextMenuAction(action) {
+            if (!state.selectedUnit) return;
+            
+            const unit = state.units.find(u => u.id === state.selectedUnit);
+            if (!unit) return;
+            
+            switch(action) {
+                case 'status-10-8':
+                    unit.status = '10-8';
+                    unit.statusTime = new Date();
+                    break;
+                case 'status-10-6':
+                    unit.status = '10-6';
+                    unit.statusTime = new Date();
+                    break;
+                case 'status-10-7':
+                    unit.status = '10-7';
+                    unit.statusTime = new Date();
+                    break;
+                case 'update-location':
+                    const newLocation = prompt('Enter new location:', unit.location);
+                    if (newLocation) {
+                        unit.location = newLocation;
+                    }
+                    break;
+                case 'remove-unit':
+                    if (confirm(`Are you sure you want to remove Unit ${unit.id}?`)) {
+                        state.units = state.units.filter(u => u.id !== state.selectedUnit);
+                    }
+                    break;
+            }
+            
+            renderUnitList();
+            state.selectedUnit = null;
         }
 
         // Activate a priority situation
@@ -1600,6 +1907,7 @@
             state.units = [];
             state.activeCall = null;
             state.activePrioritySituation = null;
+            state.selectedUnit = null;
             
             // Show login screen
             cadApp.style.display = 'none';
@@ -1902,34 +2210,23 @@
             if (unit.status === '10-6') statusClass = 'busy';
             else if (unit.status === '10-7') statusClass = 'out-of-service';
             
+            // Determine badge icon based on department
+            let badgeIcon = '';
+            if (unit.department === 'law-enforcement') {
+                badgeIcon = '<i class="fas fa-shield-alt unit-badge"></i>';
+            } else if (unit.department === 'fire') {
+                badgeIcon = '<i class="fas fa-fire unit-badge"></i>';
+            }
+            
             unitElement.innerHTML = `
                 <div class="unit-status ${statusClass}"></div>
                 <div class="unit-info">
-                    <div class="unit-id">Unit ${unit.id}</div>
+                    <div class="unit-id">${badgeIcon} Unit ${unit.id}</div>
                     <div class="unit-officer">${unit.officer} • ${unit.rank}</div>
                     <div class="unit-location">${unit.location}</div>
                     <div class="unit-status-time">Status: ${unit.status} (${diffMins}m ago) | Added: ${totalDiffMins}m ago</div>
                 </div>
-                <div class="unit-actions">
-                    <button class="unit-action-btn" data-id="${unit.id}" data-action="update">Update</button>
-                    <button class="unit-action-btn" data-id="${unit.id}" data-action="remove">Remove</button>
-                </div>
             `;
-            
-            // Add event listeners for unit actions
-            unitElement.querySelectorAll('.unit-action-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const unitId = this.getAttribute('data-id');
-                    const action = this.getAttribute('data-action');
-                    
-                    if (action === 'update') {
-                        updateUnit(unitId);
-                    } else if (action === 'remove') {
-                        removeUnit(unitId);
-                    }
-                });
-            });
             
             // Add drag events
             unitElement.addEventListener('dragstart', (e) => {
@@ -1942,35 +2239,6 @@
             });
             
             return unitElement;
-        }
-
-        // Update unit information
-        function updateUnit(unitId) {
-            const unit = state.units.find(u => u.id === unitId);
-            if (!unit) return;
-            
-            const newLocation = prompt('Enter new location:', unit.location);
-            if (newLocation === null) return;
-            
-            const newStatus = prompt('Enter new status (10-8, 10-6, 10-7):', unit.status);
-            if (newStatus === null) return;
-            
-            if (['10-8', '10-6', '10-7'].includes(newStatus)) {
-                unit.location = newLocation;
-                unit.status = newStatus;
-                unit.statusTime = new Date();
-                renderUnitList();
-            } else {
-                alert('Invalid status. Must be 10-8, 10-6, or 10-7');
-            }
-        }
-
-        // Remove a unit
-        function removeUnit(unitId) {
-            if (confirm('Are you sure you want to remove this unit?')) {
-                state.units = state.units.filter(u => u.id !== unitId);
-                renderUnitList();
-            }
         }
 
         // Select a call to view details
