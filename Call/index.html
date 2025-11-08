@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lakeview Comms - 911 Call System</title>
+    <title>911 Emergency Services - Lakeview City Roleplay</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== CSS VARIABLES ===== */
@@ -79,7 +79,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--secondary);
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a1a1a 100%);
             color: var(--light);
             line-height: 1.6;
             min-height: 100vh;
@@ -235,13 +235,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes alertFlash {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
         }
 
-        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-        .animate-alertFlash { animation: alertFlash 2s infinite; }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        .animate-pulse { animation: pulse 2s infinite; }
 
         /* ===== SCROLLBAR STYLING ===== */
         ::-webkit-scrollbar {
@@ -316,7 +316,7 @@
             border-radius: var(--radius-lg);
             padding: var(--space-8);
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             box-shadow: var(--shadow-xl);
             border: 1px solid var(--border);
             animation: fadeIn 0.5s ease-out;
@@ -339,6 +339,7 @@
         .call-subtitle {
             color: var(--gray);
             font-size: var(--font-sm);
+            margin-bottom: var(--space-4);
         }
 
         .emergency-indicator {
@@ -347,11 +348,11 @@
             justify-content: center;
             gap: var(--space-3);
             padding: var(--space-3);
-            background: var(--danger);
+            background: var(--primary-transparent);
+            border: 1px solid var(--primary);
             border-radius: var(--radius);
             margin-bottom: var(--space-6);
             font-weight: 600;
-            animation: alertFlash 2s infinite;
         }
 
         /* ===== FORM ELEMENTS ===== */
@@ -435,6 +436,46 @@
             box-shadow: none;
         }
 
+        .btn-secondary {
+            background: var(--accent);
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-transparent);
+            border-color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: var(--space-2) var(--space-3);
+            font-size: var(--font-sm);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            padding: var(--space-4) var(--space-5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: var(--font-sm);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .footer-logo {
+            height: 20px;
+            width: auto;
+            opacity: 0.7;
+        }
+
         /* ===== MODAL SYSTEM ===== */
         .modal {
             display: none;
@@ -489,15 +530,78 @@
             justify-content: center;
         }
 
-        .btn-secondary {
-            background: var(--accent);
-            border: 1px solid var(--border);
-            color: var(--light);
+        /* ===== FEATURE CARDS ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin: var(--space-6) 0;
         }
 
-        .btn-secondary:hover {
+        .feature-card {
+            background: var(--accent);
+            border-radius: var(--radius);
+            padding: var(--space-4);
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            font-size: var(--font-sm);
+        }
+
+        .feature-description {
+            color: var(--gray);
+            font-size: var(--font-xs);
+        }
+
+        /* ===== EMERGENCY TYPES ===== */
+        .emergency-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-3);
+            margin: var(--space-4) 0;
+        }
+
+        .emergency-type {
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: var(--space-3);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .emergency-type:hover {
             background: var(--primary-transparent);
             border-color: var(--primary);
+        }
+
+        .emergency-type.active {
+            background: var(--primary-transparent);
+            border-color: var(--primary);
+        }
+
+        .emergency-type-icon {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-2);
+            color: var(--primary);
         }
 
         /* ===== RESPONSIVE DESIGN ===== */
@@ -513,6 +617,16 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+            
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .footer {
+                flex-direction: column;
+                gap: var(--space-3);
+                text-align: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -527,6 +641,10 @@
             .modal-content {
                 padding: var(--space-4);
             }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -536,10 +654,10 @@
         <header class="header">
             <div class="logo-container">
                 <img src="https://ik.imagekit.io/seqcqjmzq/e595f6f1-e9e2-44a1-8b97-0c5afc307593.png?updatedAt=1756007991242" alt="Lakeview Comms" class="logo">
-                <div class="title">Lakeview Comms - 911 Call System</div>
+                <div class="title">911 Emergency Services</div>
             </div>
             <div class="flex items-center gap-3">
-                <a href="dispatch.html" class="btn btn-secondary">
+                <a href="dispatch.html" class="btn btn-secondary btn-sm">
                     <i class="fas fa-tachometer-alt"></i> Dispatch Panel
                 </a>
             </div>
@@ -549,14 +667,46 @@
         <div class="main-content">
             <div class="call-panel">
                 <div class="call-header">
-                    <h1 class="call-title">Emergency 911 Call</h1>
+                    <h1 class="call-title">Lakeview City 911 Emergency Services</h1>
                     <p class="call-subtitle">Please provide accurate information for emergency response</p>
+                    
+                    <div class="emergency-indicator">
+                        <i class="fas fa-exclamation-triangle text-primary"></i>
+                        <span>EMERGENCY CALL IN PROGRESS</span>
+                        <i class="fas fa-exclamation-triangle text-primary"></i>
+                    </div>
                 </div>
 
-                <div class="emergency-indicator">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>EMERGENCY CALL IN PROGRESS</span>
-                    <i class="fas fa-exclamation-triangle"></i>
+                <!-- Features Section -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-ambulance"></i>
+                        </div>
+                        <div class="feature-title">Medical Response</div>
+                        <div class="feature-description">Fast medical assistance for emergencies</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-title">Police Dispatch</div>
+                        <div class="feature-description">Law enforcement response to incidents</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        <div class="feature-title">Fire Department</div>
+                        <div class="feature-description">Fire and rescue emergency services</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="feature-title">Location Tracking</div>
+                        <div class="feature-description">Precise location for faster response</div>
+                    </div>
                 </div>
 
                 <form id="call-form">
@@ -576,17 +726,46 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="emergency-type">Type of Emergency</label>
-                        <select class="form-select" id="emergency-type" required>
-                            <option value="">Select emergency type</option>
-                            <option value="Medical Emergency">Medical Emergency</option>
-                            <option value="Fire">Fire</option>
-                            <option value="Crime in Progress">Crime in Progress</option>
-                            <option value="Traffic Accident">Traffic Accident</option>
-                            <option value="Domestic Disturbance">Domestic Disturbance</option>
-                            <option value="Suspicious Activity">Suspicious Activity</option>
-                            <option value="Other">Other</option>
-                        </select>
+                        <label class="form-label">Type of Emergency</label>
+                        <div class="emergency-types">
+                            <div class="emergency-type" data-type="Medical Emergency">
+                                <div class="emergency-type-icon">
+                                    <i class="fas fa-ambulance"></i>
+                                </div>
+                                <div class="text-sm">Medical</div>
+                            </div>
+                            <div class="emergency-type" data-type="Fire">
+                                <div class="emergency-type-icon">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="text-sm">Fire</div>
+                            </div>
+                            <div class="emergency-type" data-type="Crime in Progress">
+                                <div class="emergency-type-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="text-sm">Crime</div>
+                            </div>
+                            <div class="emergency-type" data-type="Traffic Accident">
+                                <div class="emergency-type-icon">
+                                    <i class="fas fa-car-crash"></i>
+                                </div>
+                                <div class="text-sm">Accident</div>
+                            </div>
+                            <div class="emergency-type" data-type="Domestic Disturbance">
+                                <div class="emergency-type-icon">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div class="text-sm">Domestic</div>
+                            </div>
+                            <div class="emergency-type" data-type="Other">
+                                <div class="emergency-type-icon">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <div class="text-sm">Other</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="emergency-type" required>
                     </div>
 
                     <div class="form-group">
@@ -611,12 +790,30 @@
                         <textarea class="form-textarea" id="additional-info" placeholder="Any other important details..."></textarea>
                     </div>
 
+                    <div class="form-group">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="confirm-info" required>
+                            <label for="confirm-info" class="text-sm">I confirm that the information provided is accurate to the best of my knowledge</label>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn">
                         <i class="fas fa-phone"></i> Submit Emergency Call
                     </button>
                 </form>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-brand">
+                <img src="https://ik.imagekit.io/tycncf0zq0/Lakeview%20City%20Roleplay.png?updatedAt=1762564831685" alt="LKVC" class="footer-logo">
+                <span>© 2025 Lakeview City Roleplay | Call 911</span>
+            </div>
+            <div class="text-xs text-gray">
+                Emergency Services Dispatch System
+            </div>
+        </footer>
 
         <!-- Success Modal -->
         <div class="modal" id="success-modal">
@@ -629,6 +826,45 @@
                 <div class="modal-actions">
                     <button class="btn btn-secondary" id="new-call-btn">Make Another Call</button>
                     <a href="dispatch.html" class="btn">Go to Dispatch</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Guide Modal -->
+        <div class="modal" id="guide-modal">
+            <div class="modal-content">
+                <div class="modal-header" style="display: block; text-align: left; padding: 0; margin-bottom: var(--space-4);">
+                    <h2 class="modal-title" style="text-align: center;">Emergency Response Guide</h2>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <div class="form-group">
+                        <h3 class="text-lg font-semibold mb-2">Medical Emergencies</h3>
+                        <ul class="text-sm text-gray space-y-1">
+                            <li>• <strong>Choking:</strong> Ask if they can speak or cough. If not, instruct on back blows and abdominal thrusts.</li>
+                            <li>• <strong>Heart Attack:</strong> Have them sit down, loosen tight clothing. Ask if they have medication.</li>
+                            <li>• <strong>Seizure:</strong> Clear area of hard objects. Do not restrain. Time the seizure.</li>
+                            <li>• <strong>Bleeding:</strong> Apply direct pressure with clean cloth. Elevate injury if possible.</li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <h3 class="text-lg font-semibold mb-2">Fire Emergencies</h3>
+                        <ul class="text-sm text-gray space-y-1">
+                            <li>• <strong>Structure Fire:</strong> Confirm everyone is out. Do not re-enter building.</li>
+                            <li>• <strong>Vehicle Fire:</strong> Move at least 100 feet away. Warn about potential explosion.</li>
+                            <li>• <strong>Wildfire:</strong> Evacuate immediately. Close all windows and doors before leaving.</li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <h3 class="text-lg font-semibold mb-2">Crime Emergencies</h3>
+                        <ul class="text-sm text-gray space-y-1">
+                            <li>• <strong>Active Shooter:</strong> Instruct to Run, Hide, Fight. Find cover, silence phones.</li>
+                            <li>• <strong>Robbery:</strong> Stay calm, comply with demands, note suspect descriptions.</li>
+                            <li>• <strong>Domestic Violence:</strong> Keep caller calm. Ask if safe to talk. Get location and suspect description.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-actions" style="margin-top: var(--space-4);">
+                    <button class="btn btn-secondary" id="close-guide">Close Guide</button>
                 </div>
             </div>
         </div>
@@ -663,6 +899,7 @@
             
             // Reset form
             this.reset();
+            resetEmergencyTypes();
         });
         
         // New call button handler
@@ -670,8 +907,52 @@
             document.getElementById('success-modal').style.display = 'none';
         });
         
+        // Emergency type selection
+        document.querySelectorAll('.emergency-type').forEach(type => {
+            type.addEventListener('click', function() {
+                // Remove active class from all types
+                document.querySelectorAll('.emergency-type').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked type
+                this.classList.add('active');
+                
+                // Set the hidden input value
+                document.getElementById('emergency-type').value = this.getAttribute('data-type');
+            });
+        });
+        
+        // Reset emergency types
+        function resetEmergencyTypes() {
+            document.querySelectorAll('.emergency-type').forEach(t => t.classList.remove('active'));
+            document.getElementById('emergency-type').value = '';
+        }
+        
         // Auto-focus on first input
         document.getElementById('caller-name').focus();
+        
+        // Show emergency guide
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                document.getElementById('guide-modal').style.display = 'flex';
+            }
+        });
+        
+        // Close guide
+        document.getElementById('close-guide').addEventListener('click', function() {
+            document.getElementById('guide-modal').style.display = 'none';
+        });
+        
+        // Add visual feedback for form interactions
+        document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('border-primary');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('border-primary');
+            });
+        });
     </script>
 </body>
 </html>
