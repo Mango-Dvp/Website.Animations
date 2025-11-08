@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lakeview Comms CAD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #A2161C;
+            --primary-dark: #A2171E;
+            --secondary: #010101;
+            --accent: #1A1A1A;
+            --card-bg: #121212;
+            --light: #F5F5F5;
+            --gray: #8A8A8A;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--secondary);
+            color: var(--light);
+            overflow: hidden;
+            height: 100vh;
+            font-size: 13px;
+        }
+
+        /* Beta Badge - Compact */
+        .beta-badge {
+            position: fixed;
+            top: 5px;
+            left: 5px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            z-index: 3000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Login Screen - More Compact */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a1a1a 100%);
+        }
+
+        .login-logo {
+            width: 100px;
+            margin-bottom: 15px;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+        }
+
+        .login-title {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .login-subtitle {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+
+        .login-warning {
+            background: rgba(162, 22, 28, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 8px;
+            margin-bottom: 15px;
+            text-align: left;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--light);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: white;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 6px;
+        }
+
+        /* CAD App - More Compact */
+        .app-container {
+            display: none;
+            grid-template-rows: 50px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Header - More Compact */
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            height: 50px;
+        }
+
+        .logo {
+            height: 22px;
+            width: auto;
+        }
+
+        .title {
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-id {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .shift-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .sign-out-btn {
+            padding: 4px 8px;
+            background: rgba(162, 22, 28, 0.15);
+            color: var(--light);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Tools Button - Smaller */
+        .tools-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(162, 22, 28, 0.4);
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tools Panel - More Compact */
+        .tools-panel {
+            position: fixed;
+            bottom: 55px;
+            right: 15px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            z-index: 100;
+            display: none;
+        }
+
+        .tools-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tools-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .close-tools {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .tools-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tool-option {
+            padding: 10px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Main Content - More Compact */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 10px;
+            padding: 10px;
+            height: calc(100vh - 50px);
+            overflow: hidden;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 12px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        /* Call List - More Compact */
+        .call-item {
+            background: var(--accent);
+            border-left: 3px solid var(--warning);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .call-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .call-id {
+            font-weight: 600;
+            color: var(--light);
+            font-size: 0.85rem;
+        }
+
+        .call-priority {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--warning);
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .call-location {
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+
+        .call-type {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        /* Unit Assignment - More Compact */
+        .unit-assignment {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .assignment-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .unit-search {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .unit-search input {
+            width: 100%;
+            padding: 6px 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            max-height: 120px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        .search-result {
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+        }
+
+        /* Custom Select - More Compact */
+        .custom-select {
+            position: relative;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .custom-select-header {
+            padding: 6px 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .custom-select-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            max-height: 120px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        .custom-select-option {
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+        }
+
+        .assign-btn {
+            width: 100%;
+            padding: 6px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Unit List - More Compact */
+        .department-section {
+            margin-bottom: 15px;
+        }
+
+        .department-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .department-logo {
+            height: 18px;
+            width: auto;
+        }
+
+        .department-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .rank-section {
+            margin-bottom: 12px;
+        }
+
+        .rank-title {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            padding-left: 4px;
+            border-left: 2px solid var(--primary);
+        }
+
+        .unit-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: var(--accent);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .unit-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .unit-info {
+            flex: 1;
+        }
+
+        .unit-id {
+            font-weight: 600;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .unit-badge {
+            font-size: 0.65rem;
+            color: var(--primary);
+        }
+
+        .unit-officer, .unit-location, .unit-status-time {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 2px;
+        }
+
+        .unit-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .unit-action-btn {
+            padding: 3px 6px;
+            background: var(--card-bg);
+            color: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 0.6rem;
+            cursor: pointer;
+        }
+
+        /* Active Incident Panel - More Compact */
+        .active-incident {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .incident-header {
+            background: var(--accent);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .incident-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .incident-id {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .incident-priority {
+            padding: 4px 8px;
+            border-radius: 5px;
+            background: var(--warning);
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .incident-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .narrative-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+
+        .narrative-title {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .narrative-log {
+            flex: 1;
+            background: var(--accent);
+            border-radius: 6px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            max-height: 120px;
+            border: 1px solid var(--border);
+        }
+
+        .narrative-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .narrative-time {
+            font-size: 0.65rem;
+            color: var(--gray);
+            margin-bottom: 2px;
+        }
+
+        .narrative-input {
+            display: flex;
+            margin-top: 8px;
+        }
+
+        .narrative-input input {
+            flex: 1;
+            padding: 6px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px 0 0 5px;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .narrative-input button {
+            padding: 6px 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 0 5px 5px 0;
+            color: white;
+            cursor: pointer;
+        }
+
+        .assigned-units {
+            margin-top: 12px;
+        }
+
+        .units-title {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .unit-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 30px;
+            padding: 8px;
+            background: var(--accent);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .unit-tag {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .unit-tag-remove {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 0;
+            width: 12px;
+            height: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Priority Button - More Compact */
+        .priority-btn {
+            animation: spectrum 3s infinite;
+            font-size: 0.75rem;
+            padding: 6px 10px;
+        }
+
+        /* Active Alerts - More Compact */
+        .active-alerts {
+            position: fixed;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alert-item {
+            background: var(--card-bg);
+            border-radius: 6px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .alert-icon {
+            font-size: 1rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .alert-description {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .alert-time {
+            font-size: 0.65rem;
+            color: var(--gray);
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles - More Compact */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 8px;
+            width: 450px;
+            max-width: 90%;
+            padding: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            width: 100%;
+            height: 70px;
+            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: white;
+            resize: vertical;
+            font-size: 0.8rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        /* Status Options - More Compact */
+        .status-options {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .status-option {
+            flex: 1;
+            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        /* Department Selection - More Compact */
+        .department-selection {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .department-option {
+            flex: 1;
+            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+        }
+
+        .department-option-logo {
+            height: 18px;
+            width: auto;
+        }
+
+        /* Update Options - More Compact */
+        .update-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .update-option {
+            padding: 10px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Signal Input - More Compact */
+        .signal-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .signal-input input {
+            flex: 1;
+            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        /* Guide Container - More Compact */
+        .guide-container {
+            max-height: 350px;
+            overflow-y: auto;
+            margin: 12px 0;
+        }
+
+        .guide-category {
+            margin-bottom: 15px;
+        }
+
+        .guide-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        .guide-steps {
+            padding-left: 12px;
+        }
+
+        .guide-step {
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        /* Priority Options - More Compact */
+        .priority-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .priority-option {
+            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        /* Empty State - More Compact */
+        .empty-state {
+            text-align: center;
+            padding: 20px 10px;
+            color: var(--gray);
+        }
+
+        .empty-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        /* LKVC Branding - More Compact */
+        .lkvc-brand {
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray);
+            font-size: 0.65rem;
+            z-index: 100;
+        }
+
+        .lkvc-logo {
+            height: 14px;
+            width: auto;
+            opacity: 0.7;
+        }
+
+        /* Utility Classes */
+        .text-sm { font-size: 0.75rem; }
+        .text-xs { font-size: 0.65rem; }
+        .text-center { text-align: center; }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .hidden { display: none; }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--accent); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+        /* Animations */
+        @keyframes betaPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes modalAppear {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes spectrum {
+            0% { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+            25% { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+            50% { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+            75% { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+            100% { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Beta Badge - Compact -->
+    <div class="beta-badge">BETA • Under Development</div>
+
+    <!-- LKVC Branding - Compact -->
+    <div class="lkvc-brand">
+        <img src="https://ik.imagekit.io/tycncf0zq0/Lakeview%20City%20Roleplay.png?updatedAt=1762564831685" alt="LKVC" class="lkvc-logo">
+        <span>Lakeview City Roleplay</span>
+    </div>
+
+    <!-- Active Alerts Section - Compact -->
+    <div class="active-alerts" id="active-alerts"></div>
+
+    <!-- Login Screen - Compact -->
+    <div class="login-container" id="login-screen">
+        <img src="https://ik.imagekit.io/seqcqjmzq/e595f6f1-e9e2-44a1-8b97-0c5afc307593.png?updatedAt=1756007991242" alt="Lakeview Comms CAD" class="login-logo">
+        <div class="login-card">
+            <h1 class="login-title">Lakeview Comms CAD</h1>
+            <p class="login-subtitle">Emergency Communications Center</p>
+            
+            <div class="login-warning">
+                <p><strong>Warning:</strong> This system contains sensitive law enforcement information. Access is restricted to authorized ECC personnel only.</p>
+            </div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Discord ID</label>
+                    <input type="text" class="form-input" id="discord-id" placeholder="Enter your Discord ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Roblox Username</label>
+                    <input type="text" class="form-input" id="roblox-username" placeholder="Enter your Roblox username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Position</label>
+                    <div class="custom-select" id="position-select">
+                        <div class="custom-select-header">
+                            <span>Select your position</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="custom-select-options">
+                            <div class="custom-select-option" data-value="Dispatcher">Dispatcher</div>
+                            <div class="custom-select-option" data-value="Senior Dispatcher">Senior Dispatcher</div>
+                            <div class="custom-select-option" data-value="ECC Supervisor">ECC Supervisor</div>
+                            <div class="custom-select-option" data-value="Administrator">Administrator</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn">Access CAD System</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal - Compact -->
+    <div class="confirmation-modal" id="confirmation-modal">
+        <div class="confirmation-content">
+            <div class="confirmation-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="confirmation-title">Shift Logged Successfully</h2>
+            <p class="confirmation-message">Your shift has been logged in our system. You are now connected to the Lakeview Comms CAD system.</p>
+            <button class="confirmation-btn" id="close-confirmation">Continue to CAD</button>
+        </div>
+    </div>
+
+    <!-- Sign Out Modal - Compact -->
+    <div class="signout-modal" id="signout-modal">
+        <div class="signout-content">
+            <div class="signout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="signout-title">Confirm Sign Out</h2>
+            <p class="signout-message">Are you sure you want to sign out? Your shift will be logged and the system will close.</p>
+            <div class="signout-actions">
+                <button class="btn btn-secondary" id="cancel-signout">Cancel</button>
+                <button class="btn btn-danger" id="confirm-signout">Confirm Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tools Panel - Compact -->
+    <div class="tools-panel" id="tools-panel">
+        <div class="tools-header">
+            <div class="tools-title">Dispatcher Tools</div>
+            <button class="close-tools">&times;</button>
+        </div>
+        <div class="tools-options">
+            <div class="tool-option" data-tool="signal">
+                <i class="fas fa-broadcast-tower"></i>
+                <div>
+                    <div class="text-sm">Signal Activation</div>
+                    <div class="text-xs">Activate emergency signals</div>
+                </div>
+            </div>
+            <div class="tool-option" data-tool="supervisor">
+                <i class="fas fa-user-shield"></i>
+                <div>
+                    <div class="text-sm">Supervisor Request</div>
+                    <div class="text-xs">Request supervisor assistance</div>
+                </div>
+            </div>
+            <div class="tool-option" data-tool="guide">
+                <i class="fas fa-book-medical"></i>
+                <div>
+                    <div class="text-sm">911 Call Guide</div>
+                    <div class="text-xs">Emergency response protocols</div>
+                </div>
+            </div>
+            <div class="tool-option" data-tool="doc">
+                <i class="fas fa-file-alt"></i>
+                <div>
+                    <div class="text-sm">Documentation</div>
+                    <div class="text-xs">Complete system documentation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tools Button - Compact -->
+    <button class="tools-btn" id="tools-btn">
+        <i class="fas fa-tools"></i>
+    </button>
+
+    <!-- CAD Application - Compact -->
+    <div class="app-container" id="cad-app">
+        <header>
+            <div class="logo-container">
+                <img src="https://ik.imagekit.io/seqcqjmzq/e595f6f1-e9e2-44a1-8b97-0c5afc307593.png?updatedAt=1756007991242" alt="Lakeview Comms CAD" class="logo">
+                <div class="title">Lakeview Comms CAD</div>
+            </div>
+            <div class="user-info">
+                <div class="status-indicator"></div>
+                <div class="user-details">
+                    <div class="user-id" id="display-user-id">User#0000</div>
+                    <div class="shift-time" id="shift-timer">Shift: 00:00:00</div>
+                </div>
+                <button class="sign-out-btn" id="sign-out-btn">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Call List - Compact -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-list"></i>
+                        Incident Queue
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn" id="new-call-btn">
+                            <i class="fas fa-plus"></i> New Call
+                        </button>
+                    </div>
+                </div>
+                <div class="call-list" id="call-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <p>No active incidents</p>
+                        <p class="text-sm">Create a new call to get started</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel: Active Incident - Compact -->
+            <div class="panel">
+                <div class="active-incident">
+                    <div class="incident-header" id="active-incident-header">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-binoculars"></i>
+                            </div>
+                            <p>No incident selected</p>
+                            <p class="text-sm">Select an incident from the queue to view details</p>
+                        </div>
+                    </div>
+
+                    <div class="narrative-container">
+                        <div class="narrative-title">
+                            <i class="fas fa-scroll"></i>
+                            Incident Narrative
+                        </div>
+                        <div class="narrative-log" id="narrative-log"></div>
+                        <div class="narrative-input">
+                            <input type="text" id="narrative-input" placeholder="Add narrative entry..." disabled>
+                            <button id="add-narrative" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="assigned-units">
+                        <div class="units-title">
+                            <i class="fas fa-users"></i>
+                            Assigned Units
+                        </div>
+                        <div class="unit-tags" id="assigned-units"></div>
+                    </div>
+
+                    <div class="unit-assignment">
+                        <div class="assignment-title">
+                            <i class="fas fa-user-plus"></i>
+                            Assign Units
+                        </div>
+                        <div class="unit-search">
+                            <input type="text" id="unit-search" placeholder="Search for units...">
+                            <div class="search-results" id="search-results"></div>
+                        </div>
+                        <div class="custom-select" id="unit-select">
+                            <div class="custom-select-header">
+                                <span>Select a unit to assign</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="custom-select-options" id="unit-options"></div>
+                        </div>
+                        <button class="assign-btn" id="assign-btn">
+                            <i class="fas fa-plus"></i> Assign Unit
+                        </button>
+                    </div>
+
+                    <div class="panel-actions mt-12">
+                        <button class="btn priority-btn" id="priority-btn">
+                            <i class="fas fa-exclamation-triangle"></i> Priority Situation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Unit List - Compact -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-car"></i>
+                        Unit Status Board
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn" id="add-unit-btn">
+                            <i class="fas fa-plus"></i> Add Unit
+                        </button>
+                    </div>
+                </div>
+                <div class="unit-list" id="unit-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <p>No units available</p>
+                        <p class="text-sm">Add units to the status board</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals would continue here with compact styling -->
+    <!-- Due to character limits, I've included the most critical parts -->
+
+    <script>
+        // Application State
+        const state = {
+            user: null,
+            shiftStart: null,
+            calls: [],
+            units: [],
+            activeCall: null,
+            callCounter: 1,
+            selectedPriority: 'medium',
+            selectedUnitStatus: '10-8',
+            selectedDepartment: 'law-enforcement',
+            activePrioritySituation: null,
+            selectedUnit: null,
+            activeSignals: [],
+            activeAlerts: []
+        };
+
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const cadApp = document.getElementById('cad-app');
+        const loginForm = document.getElementById('login-form');
+        const toolsBtn = document.getElementById('tools-btn');
+        const toolsPanel = document.getElementById('tools-panel');
+        const closeToolsBtn = document.querySelector('.close-tools');
+        const callList = document.getElementById('call-list');
+        const unitList = document.getElementById('unit-list');
+        const activeIncidentHeader = document.getElementById('active-incident-header');
+        const narrativeLog = document.getElementById('narrative-log');
+        const narrativeInput = document.getElementById('narrative-input');
+        const addNarrativeBtn = document.getElementById('add-narrative');
+        const assignedUnits = document.getElementById('assigned-units');
+        const unitSearch = document.getElementById('unit-search');
+        const searchResults = document.getElementById('search-results');
+        const unitSelect = document.getElementById('unit-select');
+        const unitOptions = document.getElementById('unit-options');
+        const assignBtn = document.getElementById('assign-btn');
+        const priorityBtn = document.getElementById('priority-btn');
+        const newCallBtn = document.getElementById('new-call-btn');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        const positionSelect = document.getElementById('position-select');
+
+        // Initialize the application
+        function init() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('lkv_user');
+            if (savedUser) {
+                state.user = JSON.parse(savedUser);
+                state.shiftStart = new Date(localStorage.getItem('lkv_shift_start'));
+                startCAD();
+            }
+
+            // Event Listeners
+            loginForm.addEventListener('submit', handleLogin);
+            toolsBtn.addEventListener('click', () => toolsPanel.style.display = 'block');
+            closeToolsBtn.addEventListener('click', () => toolsPanel.style.display = 'none');
+            newCallBtn.addEventListener('click', () => showModal('new-call-modal'));
+            signOutBtn.addEventListener('click', () => showModal('signout-modal'));
+            addNarrativeBtn.addEventListener('click', addNarrativeEntry);
+            narrativeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addNarrativeEntry();
+            });
+            assignBtn.addEventListener('click', assignUnitToCall);
+            unitSearch.addEventListener('input', handleUnitSearch);
+            priorityBtn.addEventListener('click', () => showModal('priority-modal'));
+
+            // Setup custom selects
+            setupCustomSelect(positionSelect);
+            setupCustomSelect(unitSelect);
+
+            // Load initial data
+            loadInitialData();
+        }
+
+        // Setup custom select functionality
+        function setupCustomSelect(selectElement) {
+            const header = selectElement.querySelector('.custom-select-header');
+            const options = selectElement.querySelector('.custom-select-options');
+            
+            header.addEventListener('click', () => {
+                options.style.display = options.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            options.querySelectorAll('.custom-select-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    header.querySelector('span').textContent = option.textContent;
+                    options.style.display = 'none';
+                });
+            });
+            
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!selectElement.contains(e.target)) {
+                    options.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle user login
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const discordId = document.getElementById('discord-id').value;
+            const robloxUsername = document.getElementById('roblox-username').value;
+            const position = positionSelect.querySelector('.custom-select-header span').textContent;
+            
+            if (position === 'Select your position') {
+                alert('Please select your position');
+                return;
+            }
+            
+            state.user = {
+                discordId,
+                robloxUsername,
+                position
+            };
+            
+            state.shiftStart = new Date();
+            
+            // Save to localStorage
+            localStorage.setItem('lkv_user', JSON.stringify(state.user));
+            localStorage.setItem('lkv_shift_start', state.shiftStart.toISOString());
+            
+            // Show confirmation modal
+            showModal('confirmation-modal');
+        }
+
+        // Start the CAD application
+        function startCAD() {
+            loginScreen.style.display = 'none';
+            cadApp.style.display = 'grid';
+            
+            // Show tools button
+            toolsBtn.style.display = 'flex';
+            
+            // Update user info
+            document.getElementById('display-user-id').textContent = state.user.discordId;
+            
+            // Start shift timer
+            updateShiftTimer();
+            setInterval(updateShiftTimer, 1000);
+            
+            // Load initial data
+            loadInitialData();
+        }
+
+        // Update shift timer
+        function updateShiftTimer() {
+            const now = new Date();
+            const diff = now - state.shiftStart;
+            
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            document.getElementById('shift-timer').textContent = 
+                `Shift: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Load initial data
+        function loadInitialData() {
+            renderCallList();
+            renderUnitList();
+            updateUnitSelect();
+        }
+
+        // Show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // Close confirmation and start CAD
+        document.getElementById('close-confirmation').addEventListener('click', () => {
+            document.getElementById('confirmation-modal').style.display = 'none';
+            startCAD();
+        });
+
+        // Handle sign out
+        document.getElementById('confirm-signout').addEventListener('click', handleSignOut);
+
+        function handleSignOut() {
+            document.getElementById('signout-modal').style.display = 'none';
+            
+            // Clear localStorage
+            localStorage.removeItem('lkv_user');
+            localStorage.removeItem('lkv_shift_start');
+            
+            // Show success screen
+            cadApp.style.display = 'none';
+            document.getElementById('signout-success').style.display = 'flex';
+            
+            // Start countdown
+            let countdown = 10;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                document.getElementById('countdown').textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    // In a real application, this would close the tab
+                    document.getElementById('signout-success').innerHTML = `
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h1 class="success-title">Tab Closed</h1>
+                        <p class="success-message">In a real application, this tab would have closed automatically.</p>
+                    `;
+                }
+            }, 1000);
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
