@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lakeview Comms CAD</title>
+    <title>Lakeview Comms CAD - Dispatch</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== CSS VARIABLES ===== */
@@ -271,6 +271,11 @@
             50% { box-shadow: 0 0 20px var(--primary); }
         }
 
+        @keyframes newCallFlash {
+            0%, 100% { background-color: var(--card-bg); }
+            50% { background-color: var(--primary-transparent); }
+        }
+
         .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
         .animate-slideIn { animation: slideIn 0.3s ease-out; }
         .animate-slideInRight { animation: slideInRight 0.3s ease-out; }
@@ -279,6 +284,7 @@
         .animate-spin { animation: spin 1s linear infinite; }
         .animate-alertFlash { animation: alertFlash 2s infinite; }
         .animate-priorityGlow { animation: priorityGlow 2s infinite; }
+        .animate-newCallFlash { animation: newCallFlash 1s 3; }
 
         /* ===== SCROLLBAR STYLING ===== */
         ::-webkit-scrollbar {
@@ -665,6 +671,10 @@
 
         .call-item.priority-low {
             border-left-color: var(--success);
+        }
+
+        .call-item.new-call {
+            animation: newCallFlash 3s;
         }
 
         .call-header {
@@ -1141,7 +1151,7 @@
             box-shadow: var(--shadow-xl);
             z-index: 100;
             transition: var(--transition);
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
@@ -1339,6 +1349,42 @@
 
         .alert-close:hover {
             color: var(--light);
+        }
+
+        /* ===== NEW CALL ALERT ===== */
+        .new-call-alert {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: var(--font-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: none;
+            animation: alertSlide 0.5s ease-out, alertFlash 1s infinite;
+        }
+
+        /* ===== EMPTY STATES ===== */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-8) var(--space-4);
+            color: var(--gray);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-4);
+            color: #333;
         }
 
         /* ===== MODAL SYSTEM ===== */
@@ -1578,296 +1624,6 @@
             transform: translateY(-2px);
         }
 
-        /* ===== EMPTY STATES ===== */
-        .empty-state {
-            text-align: center;
-            padding: var(--space-8) var(--space-4);
-            color: var(--gray);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: var(--space-4);
-            color: #333;
-        }
-
-        /* ===== LOGIN SCREEN ===== */
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            padding: var(--space-4);
-            background: linear-gradient(135deg, var(--secondary) 0%, #1a1a1a 100%);
-        }
-
-        .login-logo {
-            width: 140px;
-            margin-bottom: var(--space-5);
-        }
-
-        .login-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            width: 100%;
-            max-width: 400px;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border);
-            position: relative;
-        }
-
-        .login-title {
-            font-size: var(--font-2xl);
-            margin-bottom: var(--space-2);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .login-subtitle {
-            color: var(--gray);
-            margin-bottom: var(--space-5);
-            font-size: var(--font-sm);
-        }
-
-        .login-warning {
-            background: var(--primary-transparent);
-            border-left: 3px solid var(--primary);
-            padding: var(--space-3);
-            margin-bottom: var(--space-5);
-            text-align: left;
-            border-radius: var(--radius);
-            font-size: var(--font-xs);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: var(--space-3);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            font-size: var(--font-sm);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: var(--space-2);
-        }
-
-        .login-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(162, 22, 28, 0.4);
-        }
-
-        /* ===== CONFIRMATION MODAL ===== */
-        .confirmation-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .confirmation-content {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border);
-            animation: modalAppear 0.3s ease-out;
-        }
-
-        .confirmation-icon {
-            font-size: 3rem;
-            color: var(--success);
-            margin-bottom: var(--space-4);
-        }
-
-        .confirmation-title {
-            font-size: var(--font-xl);
-            margin-bottom: var(--space-3);
-            font-weight: 600;
-        }
-
-        .confirmation-message {
-            color: var(--gray);
-            margin-bottom: var(--space-5);
-            line-height: 1.5;
-            font-size: var(--font-sm);
-        }
-
-        .confirmation-btn {
-            padding: var(--space-3) var(--space-5);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: var(--font-sm);
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .confirmation-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(162, 22, 28, 0.4);
-        }
-
-        /* ===== SIGN OUT MODAL ===== */
-        .signout-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .signout-content {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border);
-            animation: modalAppear 0.3s ease-out;
-        }
-
-        .signout-icon {
-            font-size: 3.5rem;
-            color: var(--primary);
-            margin-bottom: var(--space-5);
-        }
-
-        .signout-title {
-            font-size: var(--font-xl);
-            margin-bottom: var(--space-4);
-            font-weight: 600;
-        }
-
-        .signout-message {
-            color: var(--gray);
-            margin-bottom: var(--space-5);
-            line-height: 1.6;
-            font-size: var(--font-sm);
-        }
-
-        .signout-actions {
-            display: flex;
-            gap: var(--space-3);
-            justify-content: center;
-        }
-
-        /* ===== SIGN OUT SUCCESS ===== */
-        .signout-success {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--secondary) 0%, #1a1a1a 100%);
-            z-index: 3000;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-            padding: var(--space-5);
-        }
-
-        .success-icon {
-            font-size: 4rem;
-            color: var(--success);
-            margin-bottom: var(--space-5);
-            animation: successPulse 2s infinite;
-        }
-
-        @keyframes successPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .success-title {
-            font-size: 2.5rem;
-            margin-bottom: var(--space-4);
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .success-message {
-            color: var(--gray);
-            margin-bottom: var(--space-6);
-            line-height: 1.6;
-            font-size: var(--font-lg);
-            max-width: 500px;
-        }
-
-        .countdown {
-            font-size: var(--font-base);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* ===== BETA BADGE ===== */
-        .beta-badge {
-            position: fixed;
-            top: var(--space-3);
-            left: var(--space-3);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: var(--space-2) var(--space-3);
-            border-radius: 20px;
-            font-size: var(--font-xs);
-            font-weight: 600;
-            z-index: 3000;
-            box-shadow: var(--shadow);
-            animation: betaPulse 3s infinite;
-        }
-
-        /* ===== LKVC BRANDING ===== */
-        .lkvc-brand {
-            position: fixed;
-            bottom: var(--space-3);
-            right: var(--space-3);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            color: var(--gray);
-            font-size: var(--font-xs);
-            z-index: 100;
-        }
-
-        .lkvc-logo {
-            height: 16px;
-            width: auto;
-            opacity: 0.7;
-        }
-
         /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 1200px) {
             .main-content {
@@ -1926,92 +1682,9 @@
     </style>
 </head>
 <body>
-    <!-- Beta Badge -->
-    <div class="beta-badge">BETA • Under Development & Testing</div>
-
-    <!-- LKVC Branding -->
-    <div class="lkvc-brand">
-        <img src="https://ik.imagekit.io/tycncf0zq0/Lakeview%20City%20Roleplay.png?updatedAt=1762564831685" alt="LKVC" class="lkvc-logo">
-        <span>Lakeview City Roleplay</span>
-    </div>
-
-    <!-- Active Alerts Section -->
-    <div class="active-alerts" id="active-alerts">
-        <!-- Priority and Signal alerts will appear here -->
-    </div>
-
-    <!-- Login Screen -->
-    <div class="login-container" id="login-screen">
-        <img src="https://ik.imagekit.io/seqcqjmzq/e595f6f1-e9e2-44a1-8b97-0c5afc307593.png?updatedAt=1756007991242" alt="Lakeview Comms CAD" class="login-logo">
-        <div class="login-card">
-            <h1 class="login-title">Lakeview Comms CAD</h1>
-            <p class="login-subtitle">Emergency Communications Center</p>
-            
-            <div class="login-warning">
-                <p><strong>Warning:</strong> This system contains sensitive law enforcement information. Access is restricted to authorized ECC personnel only.</p>
-            </div>
-            
-            <form id="login-form">
-                <div class="form-group">
-                    <label class="form-label">Discord ID</label>
-                    <input type="text" class="form-input" id="discord-id" placeholder="Enter your Discord ID" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Roblox Username</label>
-                    <input type="text" class="form-input" id="roblox-username" placeholder="Enter your Roblox username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Position</label>
-                    <select class="form-select" id="position" required>
-                        <option value="">Select your position</option>
-                        <option value="Dispatcher">Dispatcher</option>
-                        <option value="Senior Dispatcher">Senior Dispatcher</option>
-                        <option value="ECC Supervisor">ECC Supervisor</option>
-                        <option value="Administrator">Administrator</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="login-btn">Access CAD System</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div class="confirmation-modal" id="confirmation-modal">
-        <div class="confirmation-content">
-            <div class="confirmation-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2 class="confirmation-title">Shift Logged Successfully</h2>
-            <p class="confirmation-message">Your shift has been logged in our system. You are now connected to the Lakeview Comms CAD system. Thank you for your service!</p>
-            <button class="confirmation-btn" id="close-confirmation">Continue to CAD</button>
-        </div>
-    </div>
-
-    <!-- Sign Out Modal -->
-    <div class="signout-modal" id="signout-modal">
-        <div class="signout-content">
-            <div class="signout-icon">
-                <i class="fas fa-sign-out-alt"></i>
-            </div>
-            <h2 class="signout-title">Confirm Sign Out</h2>
-            <p class="signout-message">Are you sure you want to sign out? Your shift will be logged and the system will close.</p>
-            <div class="signout-actions">
-                <button class="btn btn-secondary" id="cancel-signout">Cancel</button>
-                <button class="btn btn-danger" id="confirm-signout">Confirm Sign Out</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sign Out Success Screen -->
-    <div class="signout-success" id="signout-success">
-        <div class="success-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h1 class="success-title">Session Logged Successfully</h1>
-        <p class="success-message">Your session has been logged successfully! Thank you for your shift, this tab will close automatically in <span class="countdown" id="countdown">10</span> seconds.</p>
+    <!-- New Call Alert -->
+    <div class="new-call-alert" id="new-call-alert">
+        <i class="fas fa-phone"></i> New 911 Call Received!
     </div>
 
     <!-- Priority Alert -->
@@ -2019,6 +1692,11 @@
 
     <!-- Signal Alert -->
     <div class="signal-alert" id="signal-alert"></div>
+
+    <!-- Active Alerts Section -->
+    <div class="active-alerts" id="active-alerts">
+        <!-- Priority and Signal alerts will appear here -->
+    </div>
 
     <!-- Tools Panel -->
     <div class="tools-panel" id="tools-panel">
@@ -2364,12 +2042,17 @@
             <div class="user-info">
                 <div class="status-indicator"></div>
                 <div class="user-details">
-                    <div class="user-id" id="display-user-id">User#0000</div>
+                    <div class="user-id" id="display-user-id">Dispatcher-01</div>
                     <div class="shift-time" id="shift-timer">Shift: 00:00:00</div>
                 </div>
-                <button class="sign-out-btn" id="sign-out-btn">
-                    <i class="fas fa-sign-out-alt"></i> Sign Out
-                </button>
+                <div class="flex gap-2">
+                    <a href="call.html" class="btn btn-secondary">
+                        <i class="fas fa-phone"></i> 911 Call Panel
+                    </a>
+                    <button class="sign-out-btn" id="sign-out-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -2652,8 +2335,11 @@
         // ===== APPLICATION STATE =====
         const state = {
             // User Information
-            user: null,
-            shiftStart: null,
+            user: {
+                id: "Dispatcher-01",
+                name: "Dispatch Operator"
+            },
+            shiftStart: new Date(),
             
             // Data Collections
             calls: [],
@@ -2694,19 +2380,6 @@
         };
 
         // ===== DOM ELEMENTS =====
-        // Login & Authentication
-        const loginScreen = document.getElementById('login-screen');
-        const cadApp = document.getElementById('cad-app');
-        const loginForm = document.getElementById('login-form');
-        const confirmationModal = document.getElementById('confirmation-modal');
-        const closeConfirmationBtn = document.getElementById('close-confirmation');
-        const signOutBtn = document.getElementById('sign-out-btn');
-        const signoutModal = document.getElementById('signout-modal');
-        const cancelSignoutBtn = document.getElementById('cancel-signout');
-        const confirmSignoutBtn = document.getElementById('confirm-signout');
-        const signoutSuccess = document.getElementById('signout-success');
-        const countdownElement = document.getElementById('countdown');
-
         // User Interface
         const displayUserId = document.getElementById('display-user-id');
         const shiftTimer = document.getElementById('shift-timer');
@@ -2714,6 +2387,7 @@
         const toolsPanel = document.getElementById('tools-panel');
         const closeToolsBtn = document.querySelector('.close-tools');
         const activeAlertsContainer = document.getElementById('active-alerts');
+        const newCallAlert = document.getElementById('new-call-alert');
 
         // Call Management
         const callList = document.getElementById('call-list');
@@ -2853,8 +2527,8 @@
                 'success': 'check-circle',
                 'warning': 'exclamation-triangle',
                 'danger': 'exclamation-circle',
-                'priority': '-bullhorn',
-                'signal': '-broadcast-tower'
+                'priority': 'bullhorn',
+                'signal': 'broadcast-tower'
             };
             return icons[type] || 'info-circle';
         }
@@ -2899,6 +2573,63 @@
                 state.callCounter = data.callCounter || 1;
                 state.unitCounter = data.unitCounter || 101;
             }
+            
+            // Load emergency calls from call panel
+            loadEmergencyCalls();
+        }
+
+        function loadEmergencyCalls() {
+            const emergencyCalls = JSON.parse(localStorage.getItem('emergencyCalls') || '[]');
+            
+            emergencyCalls.forEach(callData => {
+                // Check if this call already exists
+                const existingCall = state.calls.find(call => call.id === callData.callId);
+                
+                if (!existingCall) {
+                    // Convert emergency call to CAD incident
+                    const newCall = {
+                        id: callData.callId,
+                        type: callData.emergencyType,
+                        location: callData.location,
+                        callerInfo: `${callData.callerName} (${callData.robloxUsername})${callData.phone ? ` - ${callData.phone}` : ''}`,
+                        priority: 'medium', // Default priority
+                        narrative: [{
+                            timestamp: new Date(callData.timestamp),
+                            text: `911 CALL: ${callData.description}${callData.additionalInfo ? ` Additional Info: ${callData.additionalInfo}` : ''}${callData.peopleInvolved ? ` People Involved: ${callData.peopleInvolved}` : ''}`,
+                            user: '911 System'
+                        }],
+                        status: 'active',
+                        assignedUnits: [],
+                        createdAt: new Date(callData.timestamp),
+                        createdBy: '911 System',
+                        isNew: true
+                    };
+                    
+                    state.calls.push(newCall);
+                    
+                    // Show new call alert
+                    showNewCallAlert(newCall);
+                }
+            });
+            
+            // Clear emergency calls from localStorage after processing
+            localStorage.removeItem('emergencyCalls');
+        }
+
+        function showNewCallAlert(call) {
+            newCallAlert.style.display = 'block';
+            newCallAlert.innerHTML = `<i class="fas fa-phone"></i> New 911 Call: ${call.type} at ${call.location}`;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                newCallAlert.style.display = 'none';
+            }, 5000);
+            
+            // Play notification sound
+            playNotificationSound();
+            
+            // Show notification
+            showNotification('New 911 Call', `${call.type} at ${call.location}`, 'info');
         }
 
         function saveState() {
@@ -2916,13 +2647,6 @@
         }
 
         function setupEventListeners() {
-            // Authentication
-            loginForm.addEventListener('submit', handleLogin);
-            closeConfirmationBtn.addEventListener('click', closeConfirmation);
-            signOutBtn.addEventListener('click', () => showModal('signout-modal'));
-            cancelSignoutBtn.addEventListener('click', () => hideModal('signout-modal'));
-            confirmSignoutBtn.addEventListener('click', handleSignOut);
-
             // Tools System
             toolsBtn.addEventListener('click', toggleToolsPanel);
             closeToolsBtn.addEventListener('click', () => hideModal('tools-panel'));
@@ -3056,18 +2780,26 @@
             // Apply settings
             applySettings();
             
-            // If user is logged in, start CAD
-            if (state.user) {
-                startCAD();
-            } else {
-                showLoginScreen();
-            }
+            // Update user info
+            displayUserId.textContent = state.user.id;
+            
+            // Start shift timer
+            updateShiftTimer();
+            setInterval(updateShiftTimer, 1000);
             
             // Render initial data
             renderCallList();
             renderUnitList();
             updateUnitSelect();
             updateStatistics();
+            
+            // Check for new calls periodically
+            setInterval(checkForNewCalls, 5000);
+        }
+
+        function checkForNewCalls() {
+            loadEmergencyCalls();
+            renderCallList();
         }
 
         function startBackgroundProcesses() {
@@ -3081,65 +2813,6 @@
             }, state.settings.refreshInterval);
         }
 
-        // ===== AUTHENTICATION =====
-        function handleLogin(e) {
-            e.preventDefault();
-            
-            const discordId = document.getElementById('discord-id').value;
-            const robloxUsername = document.getElementById('roblox-username').value;
-            const position = document.getElementById('position').value;
-            
-            if (!discordId || !robloxUsername || !position) {
-                showNotification('Login Error', 'Please fill in all fields', 'danger');
-                return;
-            }
-            
-            state.user = {
-                discordId,
-                robloxUsername,
-                position
-            };
-            
-            state.shiftStart = new Date();
-            
-            // Save to localStorage
-            saveState();
-            
-            // Show confirmation modal
-            showModal('confirmation-modal');
-            
-            showNotification('Login Successful', `Welcome ${position} ${discordId}`, 'success');
-        }
-
-        function closeConfirmation() {
-            hideModal('confirmation-modal');
-            startCAD();
-        }
-
-        function startCAD() {
-            loginScreen.style.display = 'none';
-            cadApp.style.display = 'grid';
-            toolsBtn.style.display = 'flex';
-            
-            // Update user info
-            displayUserId.textContent = state.user.discordId;
-            
-            // Start shift timer
-            updateShiftTimer();
-            setInterval(updateShiftTimer, 1000);
-            
-            // Load data
-            loadInitialData();
-            
-            showNotification('CAD System', 'Lakeview Comms CAD is now active', 'success');
-        }
-
-        function showLoginScreen() {
-            loginScreen.style.display = 'flex';
-            cadApp.style.display = 'none';
-            toolsBtn.style.display = 'none';
-        }
-
         function updateShiftTimer() {
             if (!state.shiftStart) return;
             
@@ -3151,41 +2824,6 @@
             const seconds = Math.floor((diff % 60000) / 1000);
             
             shiftTimer.textContent = `Shift: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function handleSignOut() {
-            hideModal('signout-modal');
-            
-            // Show loading for 2 seconds
-            setTimeout(() => {
-                // Clear localStorage
-                localStorage.removeItem('lkv_user');
-                localStorage.removeItem('lkv_shift_start');
-                localStorage.removeItem('lkv_data');
-                
-                // Show success screen
-                cadApp.style.display = 'none';
-                signoutSuccess.style.display = 'flex';
-                
-                // Start countdown
-                let countdown = 10;
-                const countdownInterval = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        // In a real application, this would close the tab
-                        signoutSuccess.innerHTML = `
-                            <div class="success-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <h1 class="success-title">Session Ended</h1>
-                            <p class="success-message">Your session has been logged successfully. You can now safely close this window.</p>
-                        `;
-                    }
-                }, 1000);
-            }, 2000);
         }
 
         // ===== CALL MANAGEMENT =====
@@ -3210,12 +2848,12 @@
                 narrative: initialNarrative ? [{
                     timestamp: new Date(),
                     text: initialNarrative,
-                    user: state.user.discordId
+                    user: state.user.id
                 }] : [],
                 status: 'active',
                 assignedUnits: [],
                 createdAt: new Date(),
-                createdBy: state.user.discordId
+                createdBy: state.user.id
             };
             
             state.calls.push(newCall);
@@ -3249,8 +2887,13 @@
             callList.innerHTML = '';
             state.calls.forEach(call => {
                 const callElement = document.createElement('div');
-                callElement.className = `call-item priority-${call.priority} ${state.activeCall && state.activeCall.id === call.id ? 'active' : ''}`;
+                callElement.className = `call-item priority-${call.priority} ${state.activeCall && state.activeCall.id === call.id ? 'active' : ''} ${call.isNew ? 'new-call' : ''}`;
                 callElement.dataset.id = call.id;
+                
+                // Remove new flag after rendering
+                if (call.isNew) {
+                    delete call.isNew;
+                }
                 
                 const priorityText = call.priority === 'high' ? 'HIGH' : 
                                    call.priority === 'medium' ? 'MEDIUM' : 'LOW';
@@ -3334,13 +2977,13 @@
             if (confirm(`Are you sure you want to close incident ${state.activeCall.id}?`)) {
                 state.activeCall.status = 'closed';
                 state.activeCall.closedAt = new Date();
-                state.activeCall.closedBy = state.user.discordId;
+                state.activeCall.closedBy = state.user.id;
                 
                 // Add closing narrative
                 state.activeCall.narrative.push({
                     timestamp: new Date(),
-                    text: `Incident closed by ${state.user.discordId}`,
-                    user: state.user.discordId
+                    text: `Incident closed by ${state.user.id}`,
+                    user: state.user.id
                 });
                 
                 // Remove from active calls
@@ -3391,7 +3034,7 @@
                 department,
                 statusTime: new Date(),
                 addedTime: new Date(),
-                addedBy: state.user.discordId
+                addedBy: state.user.id
             };
             
             state.units.push(newUnit);
@@ -3713,7 +3356,7 @@
             const entry = {
                 timestamp: new Date(),
                 text,
-                user: state.user.discordId
+                user: state.user.id
             };
             
             state.activeCall.narrative.push(entry);
@@ -3737,7 +3380,7 @@
                 state.activeCall.narrative.push({
                     timestamp: new Date(),
                     text: `Unit ${unitId} assigned to incident.`,
-                    user: state.user.discordId
+                    user: state.user.id
                 });
                 renderNarrativeLog();
 
@@ -4030,17 +3673,6 @@
             if (modal) {
                 modal.style.display = 'none';
             }
-        }
-
-        // ===== INITIAL DATA LOADING =====
-        function loadInitialData() {
-            // In a real application, this would fetch from an API
-            // For now, we'll use the data from localStorage
-            
-            renderCallList();
-            renderUnitList();
-            updateUnitSelect();
-            updateStatistics();
         }
 
         // ===== INITIALIZE APPLICATION =====
