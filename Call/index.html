@@ -875,24 +875,31 @@
         document.getElementById('call-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Validate emergency type is selected
+            const emergencyType = document.getElementById('emergency-type').value;
+            if (!emergencyType) {
+                alert('Please select an emergency type');
+                return;
+            }
+            
             // Collect form data
             const callData = {
                 callerName: document.getElementById('caller-name').value,
                 robloxUsername: document.getElementById('roblox-username').value,
                 location: document.getElementById('emergency-location').value,
-                emergencyType: document.getElementById('emergency-type').value,
+                emergencyType: emergencyType,
                 description: document.getElementById('emergency-description').value,
                 phone: document.getElementById('caller-phone').value,
                 peopleInvolved: document.getElementById('number-of-people').value,
                 additionalInfo: document.getElementById('additional-info').value,
                 timestamp: new Date().toISOString(),
-                callId: 'C-' + Date.now()
+                callId: 'C-' + Date.now(),
+                status: 'pending',
+                priority: determinePriority(emergencyType)
             };
             
             // Save to localStorage for dispatch panel to access
-            let calls = JSON.parse(localStorage.getItem('emergencyCalls') || '[]');
-            calls.push(callData);
-            localStorage.setItem('emergencyCalls', JSON.stringify(calls));
+            saveCallToDispatch(callData);
             
             // Show success modal
             document.getElementById('success-modal').style.display = 'flex';
@@ -901,6 +908,52 @@
             this.reset();
             resetEmergencyTypes();
         });
+        
+        // Determine priority based on emergency type
+        function determinePriority(emergencyType) {
+            const highPriority = ['Medical Emergency', 'Fire', 'Active Shooter', 'Hostage Situation'];
+            const mediumPriority = ['Crime in Progress', 'Domestic Disturbance', 'Traffic Accident'];
+            
+            if (highPriority.includes(emergencyType)) return 'high';
+            if (mediumPriority.includes(emergencyType)) return 'medium';
+            return 'low';
+        }
+        
+        // Save call to dispatch system
+        function saveCallToDispatch(callData) {
+            // Get existing calls or initialize empty array
+            let calls = JSON.parse(localStorage.getItem('emergencyCalls') || '[]');
+            
+            // Add new call
+            calls.push(callData);
+            
+            // Save back to localStorage
+            localStorage.setItem('emergencyCalls', JSON.stringify(calls));
+            
+            // Also save to a separate dispatch queue for the CAD system
+            let dispatchQueue = JSON.parse(localStorage.getItem('dispatchQueue') || '[]');
+            dispatchQueue.push({
+                id: callData.callId,
+                type: callData.emergencyType,
+                location: callData.location,
+                callerInfo: `${callData.callerName} (${callData.robloxUsername})${callData.phone ? ` - ${callData.phone}` : ''}`,
+                priority: callData.priority,
+                narrative: [{
+                    timestamp: new Date(callData.timestamp),
+                    text: `911 CALL: ${callData.description}${callData.additionalInfo ? ` Additional Info: ${callData.additionalInfo}` : ''}${callData.peopleInvolved ? ` People Involved: ${callData.peopleInvolved}` : ''}`,
+                    user: '911 System'
+                }],
+                status: 'active',
+                assignedUnits: [],
+                createdAt: new Date(callData.timestamp),
+                createdBy: '911 System',
+                isNew: true
+            });
+            
+            localStorage.setItem('dispatchQueue', JSON.stringify(dispatchQueue));
+            
+            console.log('Call saved to dispatch:', callData);
+        }
         
         // New call button handler
         document.getElementById('new-call-btn').addEventListener('click', function() {
@@ -953,6 +1006,30 @@
                 this.parentElement.classList.remove('border-primary');
             });
         });
+        
+        // Test function to check integration
+        function testIntegration() {
+            const testCall = {
+                callerName: "Test User",
+                robloxUsername: "TestPlayer123",
+                location: "Test Location",
+                emergencyType: "Medical Emergency",
+                description: "This is a test emergency call",
+                phone: "555-1234",
+                peopleInvolved: "1",
+                additionalInfo: "Test additional info",
+                timestamp: new Date().toISOString(),
+                callId: 'TEST-' + Date.now(),
+                status: 'pending',
+                priority: 'high'
+            };
+            
+            saveCallToDispatch(testCall);
+            console.log('Test call submitted to dispatch system');
+        }
+        
+        // Uncomment the line below to test the integration
+        // testIntegration();
     </script>
 </body>
 </html>
