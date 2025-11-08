@@ -1733,13 +1733,6 @@
                     <div class="text-xs">Complete system documentation</div>
                 </div>
             </div>
-            <div class="tool-option" data-tool="settings">
-                <i class="fas fa-cog"></i>
-                <div>
-                    <div class="text-sm">System Settings</div>
-                    <div class="text-xs">Configure CAD preferences</div>
-                </div>
-            </div>
             <div class="tool-option" data-tool="reports">
                 <i class="fas fa-chart-bar"></i>
                 <div>
@@ -1941,50 +1934,6 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div class="modal" id="settings-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">System Settings</div>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Theme</label>
-                    <select class="form-select" id="theme-select">
-                        <option value="dark">Dark Theme</option>
-                        <option value="light">Light Theme</option>
-                        <option value="auto">Auto (System)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notifications</label>
-                    <div class="form-checkbox">
-                        <input type="checkbox" id="sound-notifications" checked>
-                        <label for="sound-notifications">Enable sound notifications</label>
-                    </div>
-                    <div class="form-checkbox">
-                        <input type="checkbox" id="priority-notifications" checked>
-                        <label for="priority-notifications">Enable priority alerts</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Auto-refresh Interval</label>
-                    <select class="form-select" id="refresh-interval">
-                        <option value="5000">5 seconds</option>
-                        <option value="10000" selected>10 seconds</option>
-                        <option value="30000">30 seconds</option>
-                        <option value="60000">1 minute</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancel-settings">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-settings">Save Settings</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Reports Modal -->
     <div class="modal" id="reports-modal">
         <div class="modal-content" style="max-width: 700px;">
@@ -2046,9 +1995,6 @@
                     <div class="shift-time" id="shift-timer">Shift: 00:00:00</div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="call.html" class="btn btn-secondary">
-                        <i class="fas fa-phone"></i> 911 Call Panel
-                    </a>
                     <button class="sign-out-btn" id="sign-out-btn">
                         <i class="fas fa-sign-out-alt"></i> Sign Out
                     </button>
@@ -2361,14 +2307,6 @@
             callCounter: 1,
             unitCounter: 101,
             
-            // Settings
-            settings: {
-                theme: 'dark',
-                soundNotifications: true,
-                priorityNotifications: true,
-                refreshInterval: 10000
-            },
-            
             // Statistics
             statistics: {
                 totalCalls: 0,
@@ -2440,10 +2378,6 @@
         const docModal = document.getElementById('doc-modal');
         const cancelDocBtn = document.getElementById('cancel-doc');
         
-        const settingsModal = document.getElementById('settings-modal');
-        const cancelSettingsBtn = document.getElementById('cancel-settings');
-        const saveSettingsBtn = document.getElementById('save-settings');
-        
         const reportsModal = document.getElementById('reports-modal');
         const closeReportsBtn = document.getElementById('close-reports');
         const exportReportBtn = document.getElementById('export-report');
@@ -2481,10 +2415,8 @@
         }
 
         function playNotificationSound() {
-            if (state.settings.soundNotifications) {
-                // In a real application, this would play an actual sound
-                console.log('Notification sound played');
-            }
+            // In a real application, this would play an actual sound
+            console.log('Notification sound played');
         }
 
         function showNotification(title, message, type = 'info') {
@@ -2554,16 +2486,11 @@
             // Load user data
             const savedUser = localStorage.getItem('lkv_user');
             const savedShiftStart = localStorage.getItem('lkv_shift_start');
-            const savedSettings = localStorage.getItem('lkv_settings');
             const savedData = localStorage.getItem('lkv_data');
 
             if (savedUser) {
                 state.user = JSON.parse(savedUser);
                 state.shiftStart = new Date(savedShiftStart);
-            }
-
-            if (savedSettings) {
-                state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
             }
 
             if (savedData) {
@@ -2574,46 +2501,59 @@
                 state.unitCounter = data.unitCounter || 101;
             }
             
-            // Load emergency calls from call panel
+            // Load emergency calls from 911 panel
             loadEmergencyCalls();
         }
 
         function loadEmergencyCalls() {
+            // Check both possible storage locations for 911 calls
             const emergencyCalls = JSON.parse(localStorage.getItem('emergencyCalls') || '[]');
+            const dispatchQueue = JSON.parse(localStorage.getItem('dispatchQueue') || '[]');
             
+            // Process emergency calls
             emergencyCalls.forEach(callData => {
-                // Check if this call already exists
-                const existingCall = state.calls.find(call => call.id === callData.callId);
-                
-                if (!existingCall) {
-                    // Convert emergency call to CAD incident
-                    const newCall = {
-                        id: callData.callId,
-                        type: callData.emergencyType,
-                        location: callData.location,
-                        callerInfo: `${callData.callerName} (${callData.robloxUsername})${callData.phone ? ` - ${callData.phone}` : ''}`,
-                        priority: 'medium', // Default priority
-                        narrative: [{
-                            timestamp: new Date(callData.timestamp),
-                            text: `911 CALL: ${callData.description}${callData.additionalInfo ? ` Additional Info: ${callData.additionalInfo}` : ''}${callData.peopleInvolved ? ` People Involved: ${callData.peopleInvolved}` : ''}`,
-                            user: '911 System'
-                        }],
-                        status: 'active',
-                        assignedUnits: [],
-                        createdAt: new Date(callData.timestamp),
-                        createdBy: '911 System',
-                        isNew: true
-                    };
-                    
-                    state.calls.push(newCall);
-                    
-                    // Show new call alert
-                    showNewCallAlert(newCall);
-                }
+                processNewCall(callData);
+            });
+            
+            // Process dispatch queue calls
+            dispatchQueue.forEach(callData => {
+                processNewCall(callData);
             });
             
             // Clear emergency calls from localStorage after processing
             localStorage.removeItem('emergencyCalls');
+            localStorage.removeItem('dispatchQueue');
+        }
+
+        function processNewCall(callData) {
+            // Check if this call already exists
+            const existingCall = state.calls.find(call => call.id === callData.callId || call.id === callData.id);
+            
+            if (!existingCall) {
+                // Convert emergency call to CAD incident
+                const newCall = {
+                    id: callData.callId || callData.id,
+                    type: callData.emergencyType || callData.type,
+                    location: callData.location,
+                    callerInfo: callData.callerInfo || `${callData.callerName} (${callData.robloxUsername})${callData.phone ? ` - ${callData.phone}` : ''}`,
+                    priority: callData.priority || 'medium',
+                    narrative: callData.narrative || [{
+                        timestamp: new Date(callData.timestamp),
+                        text: `911 CALL: ${callData.description}${callData.additionalInfo ? ` Additional Info: ${callData.additionalInfo}` : ''}${callData.peopleInvolved ? ` People Involved: ${callData.peopleInvolved}` : ''}`,
+                        user: '911 System'
+                    }],
+                    status: 'active',
+                    assignedUnits: [],
+                    createdAt: new Date(callData.timestamp),
+                    createdBy: '911 System',
+                    isNew: true
+                };
+                
+                state.calls.push(newCall);
+                
+                // Show new call alert
+                showNewCallAlert(newCall);
+            }
         }
 
         function showNewCallAlert(call) {
@@ -2635,7 +2575,6 @@
         function saveState() {
             localStorage.setItem('lkv_user', JSON.stringify(state.user));
             localStorage.setItem('lkv_shift_start', state.shiftStart.toISOString());
-            localStorage.setItem('lkv_settings', JSON.stringify(state.settings));
             
             const data = {
                 calls: state.calls,
@@ -2703,10 +2642,6 @@
 
             // Documentation
             cancelDocBtn.addEventListener('click', () => hideModal('doc-modal'));
-
-            // Settings
-            cancelSettingsBtn.addEventListener('click', () => hideModal('settings-modal'));
-            saveSettingsBtn.addEventListener('click', saveSettings);
 
             // Reports
             closeReportsBtn.addEventListener('click', () => hideModal('reports-modal'));
@@ -2777,9 +2712,6 @@
         }
 
         function initializeUI() {
-            // Apply settings
-            applySettings();
-            
             // Update user info
             displayUserId.textContent = state.user.id;
             
@@ -2794,7 +2726,7 @@
             updateStatistics();
             
             // Check for new calls periodically
-            setInterval(checkForNewCalls, 5000);
+            setInterval(checkForNewCalls, 3000);
         }
 
         function checkForNewCalls() {
@@ -2805,12 +2737,6 @@
         function startBackgroundProcesses() {
             // Auto-save every 30 seconds
             setInterval(saveState, 30000);
-            
-            // Auto-refresh data based on settings
-            setInterval(() => {
-                refreshCalls();
-                refreshUnits();
-            }, state.settings.refreshInterval);
         }
 
         function updateShiftTimer() {
@@ -2966,7 +2892,6 @@
         }
 
         function refreshCalls() {
-            // In a real application, this would fetch from an API
             renderCallList();
             showNotification('Data Refreshed', 'Call list updated', 'info');
         }
@@ -3248,7 +3173,6 @@
         }
 
         function refreshUnits() {
-            // In a real application, this would fetch from an API
             renderUnitList();
             updateStatistics();
             showNotification('Data Refreshed', 'Unit list updated', 'info');
@@ -3510,9 +3434,6 @@
                 case 'doc':
                     showModal('doc-modal');
                     break;
-                case 'settings':
-                    showModal('settings-modal');
-                    break;
                 case 'reports':
                     showReports();
                     break;
@@ -3591,34 +3512,6 @@
             }
 
             showModal('supervisor-modal');
-        }
-
-        // ===== SETTINGS SYSTEM =====
-        function applySettings() {
-            // Apply theme
-            document.documentElement.setAttribute('data-theme', state.settings.theme);
-            
-            // Apply other settings as needed
-        }
-
-        function saveSettings() {
-            const theme = document.getElementById('theme-select').value;
-            const soundNotifications = document.getElementById('sound-notifications').checked;
-            const priorityNotifications = document.getElementById('priority-notifications').checked;
-            const refreshInterval = document.getElementById('refresh-interval').value;
-            
-            state.settings = {
-                theme,
-                soundNotifications,
-                priorityNotifications,
-                refreshInterval: parseInt(refreshInterval)
-            };
-            
-            applySettings();
-            saveState();
-            hideModal('settings-modal');
-            
-            showNotification('Settings Saved', 'Your preferences have been updated', 'success');
         }
 
         // ===== REPORTS SYSTEM =====
